@@ -438,6 +438,18 @@
             [modifications addObject:modification];
         }
     }
+    
+    // Macro difference -- DreamPiggy
+    if (oldCursor.kind == PLClangCursorKindMacroDefinition && newCursor.kind == PLClangCursorKindMacroDefinition) {
+        NSString *oldMacroDefinition = [self macroDefinitionForCursor:oldCursor];
+        NSString *newMacroDefinition = [self macroDefinitionForCursor:newCursor];
+        if (![oldMacroDefinition isEqualToString:newMacroDefinition]) {
+            OCDModification *modification = [OCDModification modificationWithType:OCDModificationTypeMacro
+                                                                    previousValue:oldMacroDefinition
+                                                                     currentValue:newMacroDefinition];
+            [modifications addObject:modification];
+        }
+    }
 
     if ([modifications count] > 0) {
         NSMutableArray *differences = [NSMutableArray array];
@@ -1013,6 +1025,26 @@
     }
 
     return nil;
+}
+
+// Read macro definition from the cursor - DreamPiggy
+- (NSString *)macroDefinitionForCursor:(PLClangCursor *)cursor {
+    if (cursor.kind != PLClangCursorKindMacroDefinition) {
+        return nil;
+    }
+    PLClangSourceLocation *startLocation = cursor.extent.startLocation;
+    PLClangSourceLocation *endLocaltion = cursor.extent.endLocation;
+    NSRange range = NSMakeRange((NSUInteger)startLocation.fileOffset, (NSUInteger)endLocaltion.fileOffset - (NSUInteger)startLocation.fileOffset);
+    
+    NSString *fileContents =
+    [NSString stringWithContentsOfFile:startLocation.path encoding:NSUTF8StringEncoding error:nil];
+    if (NSMaxRange(range) > fileContents.length) {
+        return nil;
+    }
+    
+    NSString *definition = [fileContents substringWithRange:range];
+    
+    return definition;
 }
 
 /**

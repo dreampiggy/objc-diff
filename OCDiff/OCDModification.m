@@ -42,6 +42,9 @@
 
         case OCDModificationTypeHeader:
             return @"Header";
+            
+        case OCDModificationTypeMacro:
+            return @"Macro";
     }
 
     abort();
