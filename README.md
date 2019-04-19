@@ -1,5 +1,7 @@
 # objc-diff
 
+![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg?style=flat) [![Build Status](https://travis-ci.org/dreampiggy/objc-diff.svg?branch=master)](https://travis-ci.org/dreampiggy/objc-diff) 
+
 Generates a text, XML, or HTML report of the API differences between two versions of an Objective-C library. It assists library authors with creating a diff report for their users and verifying that no unexpected API changes have been made.
 
 ## Status
