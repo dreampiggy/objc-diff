@@ -1,0 +1,18 @@
+language: objective-c
+osx_image: xcode10
+script:
+- xcodebuild -project OCDiff.xcodeproj -target OCDiff
+- mv build/Release/objc-diff .
+- mv build/Release/ObjectDoc.framework .
+- mv build/Release/objc-diff.1 .
+- zip -r objc-diff.zip objc-diff ObjectDoc.framework objc-diff.1
+notifications:
+  email: false
+deploy:
+  provider: releases
+  api_key:
+    secure: Tw4PPujAoXWOFdrpMTQaKzEkP6OHfpVW5FDMzwvdEl46Lqc8VhzfF3JZmrfIn3380lJfXtQmX9FhkptaWeQI2tE9u7ZzktHkLfRvfQ8mQ/MzUclZ3seW1W+JEPmDWmeo9i2iB+TNKQfQvum5Jhal5RSr6utYPiScp6uBxhWydQ4pEAqzl3cZyUJXPlF7n7N2Ww2cETNrj+4wVfhPuoB/+qJAGSXhHQcGTdsI43xnvHhTvj/gTO3LFF7Ghfq5iM3TKmU9s1phujDjVtOMuATliFKPkC9h3S0R3ckAEqTLB1zByILObpeFzJlquWIwzoGnGYJWxucYnROFjcB+0kVMVgbQ7Sybo3hTXNVN5ytmpyVyvJwpUgae87upIZOASbvFpwFSFpf6vn1CQdZZB2idmZfytr4FPEbPKYAZmthTyWUyMpnEcZt+zNbtrNcNb6NfcRTS841Cgg1yI+bnU5GulOpULB604RzRRgJIDf7JBNTYi09ggIXD5CuU448TV1QZcQaLoW3qIWsLNLcPgPPbDtORbafphVwpbOoWba7Gye//UuNNEsmYczM8khoedNmbuW8R/oTQDnUe8AUSr8kFl6cAxDFxm4PtiVzFS9kyUVdoSSsPeJPq1T5vlFx8xnN8AQ9j3nDlZDK4haq/DJ3Saz2H4qTwhNxGwXPnwsMdCLo=
+  file: objc-diff.zip
+  skip_cleanup: true
+  on:
+    tags: true
