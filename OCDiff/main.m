@@ -363,6 +363,7 @@ int main(int argc, char *argv[]) {
         NSMutableArray *newCompilerArguments = [oldCompilerArguments mutableCopy];
         int reportTypes = 0;
         BOOL printErrors = YES;
+        BOOL semversion = NO;
         int optchar;
 
         static struct option longopts[] = {
@@ -379,6 +380,7 @@ int main(int argc, char *argv[]) {
             { "oldargs",      no_argument,        NULL,          'O' },
             { "newargs",      no_argument,        NULL,          'N' },
             { "skip-error",   no_argument,        NULL,          'P' },
+            { "semversion",   no_argument,        NULL,          'S' },
             { "version",      no_argument,        NULL,          'v' },
             { NULL,           0,                  NULL,           0  }
         };
@@ -450,6 +452,11 @@ int main(int argc, char *argv[]) {
                 case 'P':
                 {
                     printErrors = NO;
+                    break;
+                }
+                case 'S':
+                {
+                    semversion = YES;
                     break;
                 }
                 case 0:
@@ -565,18 +572,18 @@ int main(int argc, char *argv[]) {
 
         if (reportTypes & OCDReportTypeText) {
             OCDTextReportGenerator *generator = [[OCDTextReportGenerator alloc] init];
-            [generator generateReportForDifferences:differences title:title];
+            [generator generateReportForDifferences:differences title:title semversion:semversion];
         }
 
         if (reportTypes & OCDReportTypeXML) {
             OCDXMLReportGenerator *generator = [[OCDXMLReportGenerator alloc] init];
-            [generator generateReportForDifferences:differences title:title];
+            [generator generateReportForDifferences:differences title:title semversion:semversion];
         }
 
         if (reportTypes & OCDReportTypeHTML) {
             OCDLinkMap *linkMap = [[OCDLinkMap alloc] initWithPath:linkMapPath];
             OCDHTMLReportGenerator *htmlGenerator = [[OCDHTMLReportGenerator alloc] initWithOutputDirectory:htmlOutputDirectory linkMap:linkMap];
-            [htmlGenerator generateReportForDifferences:differences title:title];
+            [htmlGenerator generateReportForDifferences:differences title:title semversion:semversion];
         }
     }
 

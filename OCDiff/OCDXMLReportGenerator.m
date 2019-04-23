@@ -2,7 +2,7 @@
 
 @implementation OCDXMLReportGenerator
 
-- (void)generateReportForDifferences:(OCDAPIDifferences *)differences title:(NSString *)title {
+- (void)generateReportForDifferences:(OCDAPIDifferences *)differences title:(NSString *)title semversion:(BOOL)semversion {
     NSXMLElement *rootElement = [NSXMLElement elementWithName:@"apidiff"];
     if (title != nil) {
         [rootElement addAttribute:[NSXMLNode attributeWithName:@"title" stringValue:title]];
@@ -20,6 +20,7 @@
 
             [differenceElement addChild:[NSXMLElement elementWithName:@"path" stringValue:difference.path]];
             [differenceElement addChild:[NSXMLElement elementWithName:@"lineNumber" stringValue:[NSString stringWithFormat:@"%tu", difference.lineNumber]]];
+            [differenceElement addChild:[NSXMLElement elementWithName:@"semversion" stringValue:[self stringForSemversion:difference.semversion]]];
 
             if ([difference.modifications count] > 0) {
                 NSXMLElement *modificationsElement = [NSXMLElement elementWithName:@"modifications"];
@@ -91,6 +92,19 @@
             return @"macro";
     }
 
+    abort();
+}
+
+- (NSString *)stringForSemversion:(OCDSemversion)semversion {
+    switch (semversion) {
+        case OCDSemversionMajor:
+            return @"major";
+        case OCDSemversionMinor:
+            return @"minor";
+        case OCDSemversionPatch:
+            return @"patch";
+    }
+    
     abort();
 }
 

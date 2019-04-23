@@ -3,6 +3,6 @@
 
 @protocol OCDReportGenerator <NSObject>
 
-- (void)generateReportForDifferences:(OCDAPIDifferences *)differences title:(NSString *)title;
+- (void)generateReportForDifferences:(OCDAPIDifferences *)differences title:(NSString *)title semversion:(BOOL)semversion;
 
 @end

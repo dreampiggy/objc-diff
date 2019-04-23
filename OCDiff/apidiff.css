@@ -50,6 +50,23 @@ h1 {
     color: #080;
 }
 
+.semversion {
+    font-weight: bold;
+    font-size: 80%;
+}
+
+.major {
+    color: red;
+}
+
+.minor {
+    color: blue;
+}
+
+.patch {
+    color: #080;
+}
+
 .declaration {
     font-family: Courier, Consolas, monospace;
 }

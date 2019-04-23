@@ -6,7 +6,7 @@
 
 @implementation OCDTextReportGenerator
 
-- (void)generateReportForDifferences:(OCDAPIDifferences *)differences title:(NSString *)title {
+- (void)generateReportForDifferences:(OCDAPIDifferences *)differences title:(NSString *)title semversion:(BOOL)semversion {
     BOOL useColor = isatty(STDOUT_FILENO) && getenv("TERM") != NULL;
 
     if (title != nil) {

@@ -77,7 +77,7 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "/var/folders/2v/nqpym40d073gm1xzlj6c92m80000gn/T/d20190419-76754-lkufk5/new/BDDiskManager.framework"
+            argument = "/var/folders/2v/nqpym40d073gm1xzlj6c92m80000gn/T/d20190423-43998-j9tcsb/new/BDDiskManager.framework"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
@@ -85,7 +85,7 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "/var/folders/2v/nqpym40d073gm1xzlj6c92m80000gn/T/d20190419-76754-lkufk5/old/BDDiskManager.framework"
+            argument = "/var/folders/2v/nqpym40d073gm1xzlj6c92m80000gn/T/d20190423-43998-j9tcsb/old/BDDiskManager.framework"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
@@ -101,15 +101,23 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "TTImage"
+            argument = "BDDiskManager"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "--xml"
+            argument = "--html"
+            isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "/Users/lizhuoli/Downloads"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "--skip-error"
+            isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "--semversion"
             isEnabled = "YES">
          </CommandLineArgument>
       </CommandLineArguments>

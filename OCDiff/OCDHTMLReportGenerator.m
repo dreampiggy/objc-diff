@@ -18,7 +18,7 @@
     return self;
 }
 
-- (void)generateReportForDifferences:(OCDAPIDifferences *)differences title:(NSString *)title {
+- (void)generateReportForDifferences:(OCDAPIDifferences *)differences title:(NSString *)title semversion:(BOOL)semversion {
     NSError *error = nil;
     if (![[NSFileManager defaultManager] createDirectoryAtPath:_outputDirectory withIntermediateDirectories:YES attributes:nil error:&error]) {
         fprintf(stderr, "Error creating directory at path %s: %s\n", [_outputDirectory UTF8String], [[error description] UTF8String]);
@@ -37,7 +37,7 @@
 
     if (differences.modules.count == 1) {
         outputFile = [_outputDirectory stringByAppendingPathComponent:@"apidiff.html"];
-        [self generateFileForDifferences:differences.modules.firstObject.differences title:title path:outputFile];
+        [self generateFileForDifferences:differences.modules.firstObject.differences title:title path:outputFile semversion:semversion];
     } else {
         BOOL hasDifferences = NO;
         NSMutableString *html = [[NSMutableString alloc] init];
@@ -87,7 +87,7 @@
 
             NSString *fileName = [module.name stringByAppendingPathExtension:@"html"];
             outputFile = [_outputDirectory stringByAppendingPathComponent:fileName];
-            [self generateFileForDifferences:module.differences title:moduleTitle path:outputFile];
+            [self generateFileForDifferences:module.differences title:moduleTitle path:outputFile semversion:semversion];
         }
 
         if (hasDifferences) {
@@ -106,7 +106,7 @@
     }
 }
 
-- (void)generateFileForDifferences:(NSArray<OCDifference *> *)differences title:(NSString *)title path:(NSString *)outputFile {
+- (void)generateFileForDifferences:(NSArray<OCDifference *> *)differences title:(NSString *)title path:(NSString *)outputFile semversion:(BOOL)semversion {
     NSMutableString *html = [[NSMutableString alloc] init];
 
     [html appendString:@"<html>\n<head>\n"];
@@ -168,6 +168,10 @@
         }
 
         [html appendFormat:@"<div class=\"difference\"><span class=\"status %@\">%@</span> ", [[self stringForDifferenceType:difference.type] lowercaseString], [self stringForDifferenceType:difference.type]];
+        
+        if (semversion) {
+            [html appendFormat:@"<span class=\"semversion %@\">%@</span> ", [self stringForSemversion:difference.semversion].lowercaseString, [self stringForSemversion:difference.semversion]];
+        }
 
         if (link != nil) {
             [html appendFormat:@"<a href=\"%@\">", link];
@@ -257,6 +261,19 @@
             return @"Modified";
     }
 
+    abort();
+}
+
+- (NSString *)stringForSemversion:(OCDSemversion)semversion {
+    switch (semversion) {
+        case OCDSemversionMajor:
+            return @"Major";
+        case OCDSemversionMinor:
+            return @"Minor";
+        case OCDSemversionPatch:
+            return @"Patch";
+    }
+    
     abort();
 }
 

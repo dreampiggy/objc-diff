@@ -32,6 +32,54 @@
     return [[self alloc] initWithType:OCDifferenceTypeModification name:name path:path lineNumber:lineNumber USR:USR modifications:modifications];
 }
 
+- (OCDSemversion)semversion {
+    // See https://semver.org/
+    switch (self.type) {
+        case OCDifferenceTypeRemoval:
+            /**
+             Major version X (X.y.z | X > 0) MUST be incremented if any backwards incompatible changes are introduced to the public API.
+             */
+            return OCDSemversionMajor;
+        case OCDifferenceTypeAddition:
+            /**
+             Minor version Y (x.Y.z | x > 0) MUST be incremented if new, backwards compatible functionality is introduced to the public API
+             */
+            return OCDSemversionMinor;
+        case OCDifferenceTypeModification: {
+            /**
+             Modification need to check each individual changes
+             */
+            size_t majorCount = 0;
+            size_t minorCount = 0;
+            size_t patchCount = 0;
+            for (OCDModification *modification in self.modifications) {
+                switch (modification.semversion) {
+                    case OCDSemversionMajor:
+                        majorCount++;
+                        break;
+                    case OCDSemversionMinor:
+                        minorCount++;
+                        break;
+                    case OCDSemversionPatch:
+                        patchCount++;
+                        break;
+                }
+            }
+            if (majorCount > 0) {
+                return OCDSemversionMajor;
+            } else if (minorCount > 0) {
+                return OCDSemversionMinor;
+            } else if (patchCount > 0) {
+                return OCDSemversionPatch;
+            } else {
+                return OCDSemversionPatch;
+            }
+        }
+    }
+    
+    abort();
+}
+
 - (NSString *)description {
     NSMutableString *result = [NSMutableString stringWithString:@"["];
     switch (self.type) {

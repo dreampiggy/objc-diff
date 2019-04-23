@@ -15,6 +15,7 @@ typedef NS_ENUM(NSUInteger, OCDifferenceType) {
 + (instancetype)modificationDifferenceWithName:(NSString *)name path:(NSString *)path lineNumber:(NSUInteger)lineNumber USR:(NSString *)USR modifications:(NSArray<OCDModification *> *)modifications;
 
 @property (nonatomic, readonly) OCDifferenceType type;
+@property (nonatomic, readonly) OCDSemversion semversion;
 @property (nonatomic, readonly) NSString *name;
 @property (nonatomic, readonly) NSString *path;
 @property (nonatomic, readonly) NSUInteger lineNumber;
