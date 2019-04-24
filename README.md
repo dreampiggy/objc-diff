@@ -8,6 +8,21 @@ Generates a text, XML, or HTML report of the API differences between two version
 
 Beta. The tool has been tested against the system frameworks and a number of third-party libraries, but I'd like to open it to feedback and additional testing before considering the command line interface and XML format stable.
 
+## Install
+
++ Using [Homebrew](https://brew.sh/)
+
+```
+brew tap dreampiggy/homebrew-taps
+brew install objc-diff
+```
+
++ Manual
+
+1. Download [the latest release](https://github.com/dreampiggy/objc-diff/releases)
+2. Unzip the `objc-diff.zip`
+3. Move the `objc-diff` and `ObjectDoc.framework` into your `PATH` (Such as `/usr/local/bin/`)
+
 ## Usage
 
     objc-diff [--old <path to old API>] --new <path to new API> [options]
