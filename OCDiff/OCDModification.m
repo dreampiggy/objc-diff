@@ -14,6 +14,10 @@
     return self;
 }
 
++ (instancetype)modificationWithType:(OCDModificationType)type previousValue:(NSString *)previousValue currentValue:(NSString *)currentValue {
+    return [[self alloc] initWithType:type previousValue:previousValue currentValue:currentValue semversion:OCDSemversionPatch];
+}
+
 + (instancetype)modificationWithType:(OCDModificationType)type previousValue:(NSString *)previousValue currentValue:(NSString *)currentValue semversion:(OCDSemversion)semversion {
     return [[self alloc] initWithType:type previousValue:previousValue currentValue:currentValue semversion:semversion];
 }

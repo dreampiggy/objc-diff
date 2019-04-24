@@ -318,6 +318,24 @@
     return extentLength == [cursor.spelling length];
 }
 
+- (BOOL)isProtocolsChangedBetweenOldProtocols:(NSOrderedSet *)oldProtocols newProtocols:(NSOrderedSet *)newProtocols {
+    BOOL protocolsChanged = NO;
+    if ([oldProtocols count] != [newProtocols count]) {
+        protocolsChanged = YES;
+    } else {
+        for (NSUInteger protocolIndex = 0; protocolIndex < [oldProtocols count]; protocolIndex++) {
+            PLClangCursor *oldProtocol = oldProtocols[protocolIndex];
+            PLClangCursor *newProtocol = newProtocols[protocolIndex];
+            if ([oldProtocol.USR isEqual:newProtocol.USR] == NO) {
+                protocolsChanged = YES;
+                break;
+            }
+        }
+    }
+    
+    return protocolsChanged;
+}
+
 - (NSArray *)differencesBetweenOldCursor:(PLClangCursor *)oldCursor newCursor:(PLClangCursor *)newCursor {
     NSMutableArray *modifications = [NSMutableArray array];
     NSString *newUSR = newCursor.USR;
@@ -386,19 +404,7 @@
         OCDSemversion semversion = OCDSemversionPatch;
         NSOrderedSet *oldProtocols = [self protocolCursorsForCursor:oldCursor];
         NSOrderedSet *newProtocols = [self protocolCursorsForCursor:newCursor];
-        BOOL protocolsChanged = NO;
-        if ([oldProtocols count] != [newProtocols count]) {
-            protocolsChanged = YES;
-        } else {
-            for (NSUInteger protocolIndex = 0; protocolIndex < [oldProtocols count]; protocolIndex++) {
-                PLClangCursor *oldProtocol = oldProtocols[protocolIndex];
-                PLClangCursor *newProtocol = newProtocols[protocolIndex];
-                if ([oldProtocol.USR isEqual:newProtocol.USR] == NO) {
-                    protocolsChanged = YES;
-                    break;
-                }
-            }
-        }
+        BOOL protocolsChanged = [self isProtocolsChangedBetweenOldProtocols:oldProtocols newProtocols:newProtocols];
 
         if (protocolsChanged) {
             // Rule: Protocol args changes should mark as Major
@@ -557,6 +563,33 @@
     return protocols;
 }
 
+/**
+ * Return YES if the newType is compatible for oldType
+ * Compatible means, no source code break when replace the declaration of oldType with newType. See the detail rules.
+ */
+- (BOOL)isCompatibleBetweenOldType:(PLClangType *)oldType newType:(PLClangType *)newType {
+    PLClangType *rawOldType = [oldType typeByRemovingOuterNullability];
+    PLClangType *rawNewType = [newType typeByRemovingOuterNullability];
+    
+    /**
+     id is compatible for MyClass
+     id is compatible for id<MyProtocol>
+     */
+    if (rawNewType.kind == PLClangTypeKindObjCId && rawOldType.kind == PLClangTypeKindObjCObjectPointer) {
+        return YES;
+    }
+    
+    /**
+     id<MyProtocol1> is compatible for id<MyProtocol1, MyProtocol2>
+     SuperClass * is compatible for SubClass *
+     */
+    if (rawNewType.kind == PLClangTypeKindObjCObjectPointer && rawOldType.kind == PLClangTypeKindObjCObjectPointer) {
+        // TODO
+    }
+    
+    return OCDEqualTypes(rawOldType, rawNewType);
+}
+
 - (BOOL)declarationChangedBetweenOldCursor:(PLClangCursor *)oldCursor newCursor:(PLClangCursor *)newCursor {
     switch (oldCursor.kind) {
         case PLClangCursorKindObjCInstanceMethodDeclaration:
@@ -643,7 +676,7 @@
         case PLClangCursorKindObjCClassMethodDeclaration:
         {
             // Rule: Method args changes should mark as Major
-            if (!OCDCompatibleTypes(oldCursor.resultType, newCursor.resultType)) {
+            if (![self isCompatibleBetweenOldType:oldCursor.resultType newType:newCursor.resultType]) {
                 return OCDSemversionMajor;
             }
             
@@ -658,7 +691,7 @@
             for (NSUInteger argIndex = 0; argIndex < [oldCursor.arguments count]; argIndex++) {
                 PLClangCursor *oldArgument = oldCursor.arguments[argIndex];
                 PLClangCursor *newArgument = newCursor.arguments[argIndex];
-                if (!OCDCompatibleTypes(oldArgument.type, newArgument.type)) {
+                if (![self isCompatibleBetweenOldType:oldArgument.type newType:newArgument.type]) {
                     return OCDSemversionMajor;
                 }
             }
@@ -697,7 +730,7 @@
         case PLClangCursorKindFunctionDeclaration:
         case PLClangCursorKindVariableDeclaration:
         {
-            return !OCDCompatibleTypes(oldCursor.type, newCursor.type) ? OCDSemversionMajor : OCDSemversionPatch;
+            return ![self isCompatibleBetweenOldType:oldCursor.type newType:newCursor.type] ? OCDSemversionMajor : OCDSemversionPatch;
         }
             
         case PLClangCursorKindTypedefDeclaration:
@@ -705,12 +738,12 @@
             // Report changes to block and function pointer typedefs
             // Rule: block typedefs changes should mark as Major
             if (oldCursor.underlyingType.kind == PLClangTypeKindBlockPointer && oldCursor.underlyingType.kind == PLClangTypeKindBlockPointer) {
-                return !OCDCompatibleTypes(oldCursor.underlyingType, newCursor.underlyingType) ? OCDSemversionMajor : OCDSemversionPatch;
+                return ![self isCompatibleBetweenOldType:oldCursor.underlyingType newType:newCursor.underlyingType] ? OCDSemversionMajor : OCDSemversionPatch;
             }
             // Rule: function pointer typedefs changes should mark as Major
             if (oldCursor.underlyingType.kind == PLClangTypeKindPointer && oldCursor.underlyingType.pointeeType.canonicalType.kind == PLClangTypeKindFunctionPrototype &&
                 newCursor.underlyingType.kind == PLClangTypeKindPointer && newCursor.underlyingType.pointeeType.canonicalType.kind == PLClangTypeKindFunctionPrototype) {
-                return !OCDCompatibleTypes(oldCursor.underlyingType, newCursor.underlyingType) ? OCDSemversionMajor : OCDSemversionPatch;
+                return ![self isCompatibleBetweenOldType:oldCursor.underlyingType newType:newCursor.underlyingType] ? OCDSemversionMajor : OCDSemversionPatch;
             }
             
             break;
@@ -1178,25 +1211,6 @@
  */
 static BOOL OCDEqualTypes(PLClangType *type1, PLClangType* type2) {
     return [type1.spelling isEqual:type2.spelling];
-}
-
-/**
- * Return YES if the type2 is compatible for type1
- * Compatible means, no source code break when replace the declaration of type1 with type2, like:
- * id is compatible for MyClass *
- * id is compatible for id<MyProtocol>
- * id<MyProtocol1> is compatible for id<MyProtocol1, MyProtocol2>
- * SuperClass * is compatible for SubClass *
- */
-static BOOL OCDCompatibleTypes(PLClangType *type1, PLClangType* type2) {
-    // TODO
-    PLClangType *raw_type1 = [type1 typeByRemovingOuterNullability];
-    PLClangType *raw_type2 = [type2 typeByRemovingOuterNullability];
-    
-    if (raw_type2.kind == PLClangTypeKindObjCId && raw_type1.kind == PLClangTypeKindObjCObjectPointer) {
-        return YES;
-    }
-    return OCDEqualTypes(raw_type1, raw_type2);
 }
 
 @end

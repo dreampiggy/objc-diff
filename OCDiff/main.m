@@ -42,6 +42,7 @@ static void PrintUsage(void) {
     "  --args <args>      Compiler arguments for both API versions\n"
     "  --oldargs <args>   Compiler arguments for the old API version\n"
     "  --newargs <args>   Compiler arguments for the new API version\n"
+    "  --semversion       Analysis the sem-version changes base on diff changes for API\n"
     "  --skip-error       Skip any parser error from clang and try to generate report\n"
     "  --version          Show the version and exit\n",
     [name UTF8String]);

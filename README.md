@@ -27,6 +27,7 @@ Beta. The tool has been tested against the system frameworks and a number of thi
       --args <args>      Compiler arguments for both API versions
       --oldargs <args>   Compiler arguments for the old API version
       --newargs <args>   Compiler arguments for the new API version
+      --semversion       Analysis the sem-version changes base on diff changes for API
       --skip-error       Skip any parser error from clang and try to generate report
       --version          Show the version and exit
 
