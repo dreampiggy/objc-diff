@@ -1,10 +1,16 @@
 language: objective-c
-osx_image: xcode10
+osx_image: xcode10.2
+addons:
+  homebrew:
+    packages:
+    - llvm
+
 script:
-- xcodebuild -project OCDiff.xcodeproj -target OCDiff
-- mv build/Release/objc-diff .
-- mv build/Release/ObjectDoc.framework .
-- mv build/Release/objc-diff.1 .
+- xcodebuild -project OCDiff.xcodeproj -scheme OCDiff -configuration Release -derivedDataPath DerivedData
+after_success:
+- mv DerivedData/Build/Products/Release/objc-diff .
+- mv DerivedData/Build/Products/Release/ObjectDoc.framework .
+- mv DerivedData/Build/Products/Release/objc-diff.1 .
 - zip -r objc-diff.zip objc-diff ObjectDoc.framework objc-diff.1
 notifications:
   email: false
