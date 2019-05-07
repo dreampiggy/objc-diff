@@ -1,0 +1,3 @@
+[submodule "Dependencies/objectdoc"]
+	path = Dependencies/objectdoc
+	url = https://github.com/dreampiggy/objectdoc.git

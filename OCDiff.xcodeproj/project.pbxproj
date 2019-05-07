@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		32F4ECA722813AA9000AA161 /* ObjectDoc.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 32F4ECA022813AA0000AA161 /* ObjectDoc.framework */; };
+		32F4ECAA22813B43000AA161 /* ObjectDoc.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 32F4ECA022813AA0000AA161 /* ObjectDoc.framework */; };
 		C907F0861F0EE1FF004A1B9D /* OCDAPISource.m in Sources */ = {isa = PBXBuildFile; fileRef = C907F0851F0EE1FF004A1B9D /* OCDAPISource.m */; };
 		C907F0871F0EE213004A1B9D /* OCDAPISource.m in Sources */ = {isa = PBXBuildFile; fileRef = C907F0851F0EE1FF004A1B9D /* OCDAPISource.m */; };
 		C90B25681EEF3D1F00A13A41 /* OCDSDK.m in Sources */ = {isa = PBXBuildFile; fileRef = C9A9607A1EEF3CB6003B234D /* OCDSDK.m */; };
@@ -22,14 +24,10 @@
 		C9586DE01EFF61C4001570AA /* PLClangCursor+OCDExtensions.m in Sources */ = {isa = PBXBuildFile; fileRef = C91DE3811EFF3DF60055507A /* PLClangCursor+OCDExtensions.m */; };
 		C96194C51928E6AE00BDBD7C /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C96194B41928E57700BDBD7C /* Foundation.framework */; };
 		C96194C81928E6AE00BDBD7C /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = C96194C71928E6AE00BDBD7C /* main.m */; };
-		C96194D11928EDD800BDBD7C /* ObjectDoc.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C96194D01928EDD800BDBD7C /* ObjectDoc.framework */; };
-		C96194D61928F01E00BDBD7C /* ObjectDoc.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = C96194D01928EDD800BDBD7C /* ObjectDoc.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		C96194DD19291D0C00BDBD7C /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C96194DC19291D0C00BDBD7C /* XCTest.framework */; };
 		C96194E519291D0C00BDBD7C /* OCDAPIComparatorTests.m in Sources */ = {isa = PBXBuildFile; fileRef = C96194E419291D0C00BDBD7C /* OCDAPIComparatorTests.m */; };
 		C96194EE19293B1600BDBD7C /* OCDAPIComparator.m in Sources */ = {isa = PBXBuildFile; fileRef = C96194ED19293B1600BDBD7C /* OCDAPIComparator.m */; };
 		C96194F119293B2D00BDBD7C /* OCDifference.m in Sources */ = {isa = PBXBuildFile; fileRef = C96194F019293B2D00BDBD7C /* OCDifference.m */; };
 		C9619532192945E000BDBD7C /* OCDAPIComparator.m in Sources */ = {isa = PBXBuildFile; fileRef = C96194ED19293B1600BDBD7C /* OCDAPIComparator.m */; };
-		C96195351929460000BDBD7C /* ObjectDoc.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C96194D01928EDD800BDBD7C /* ObjectDoc.framework */; };
 		C96195361929485B00BDBD7C /* OCDifference.m in Sources */ = {isa = PBXBuildFile; fileRef = C96194F019293B2D00BDBD7C /* OCDifference.m */; };
 		C961953B1929625100BDBD7C /* OCDModification.m in Sources */ = {isa = PBXBuildFile; fileRef = C961953A1929625100BDBD7C /* OCDModification.m */; };
 		C961953C1929655200BDBD7C /* OCDModification.m in Sources */ = {isa = PBXBuildFile; fileRef = C961953A1929625100BDBD7C /* OCDModification.m */; };
@@ -44,6 +42,34 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		32F4EC9F22813AA0000AA161 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 32F4EC9722813AA0000AA161 /* ObjectDoc.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 05BE063F16B43ECE00DF46D5;
+			remoteInfo = ObjectDoc;
+		};
+		32F4ECA122813AA0000AA161 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 32F4EC9722813AA0000AA161 /* ObjectDoc.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 05BE065716B43ECF00DF46D5;
+			remoteInfo = ObjectDocTests;
+		};
+		32F4ECA322813AA0000AA161 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 32F4EC9722813AA0000AA161 /* ObjectDoc.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 05BE067716B4422C00DF46D5;
+			remoteInfo = doctool;
+		};
+		32F4ECA522813AA0000AA161 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 32F4EC9722813AA0000AA161 /* ObjectDoc.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 32E54B50226DA24900244FE2;
+			remoteInfo = clang;
+		};
 		C9619533192945FB00BDBD7C /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = C96194A71928E56500BDBD7C /* Project object */;
@@ -72,7 +98,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				C96194D61928F01E00BDBD7C /* ObjectDoc.framework in Copy Frameworks */,
 			);
 			name = "Copy Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -80,6 +105,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		32F4EC9722813AA0000AA161 /* ObjectDoc.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ObjectDoc.xcodeproj; path = Dependencies/objectdoc/ObjectDoc.xcodeproj; sourceTree = "<group>"; };
 		C907F0841F0EE1FF004A1B9D /* OCDAPISource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCDAPISource.h; sourceTree = "<group>"; };
 		C907F0851F0EE1FF004A1B9D /* OCDAPISource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCDAPISource.m; sourceTree = "<group>"; };
 		C91516D3194DE40B000AB047 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -100,9 +126,7 @@
 		C96194B41928E57700BDBD7C /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		C96194C41928E6AE00BDBD7C /* objc-diff */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "objc-diff"; sourceTree = BUILT_PRODUCTS_DIR; };
 		C96194C71928E6AE00BDBD7C /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		C96194D01928EDD800BDBD7C /* ObjectDoc.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ObjectDoc.framework; path = Dependencies/ObjectDoc.framework; sourceTree = "<group>"; };
 		C96194DB19291D0C00BDBD7C /* OCDiffTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = OCDiffTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		C96194DC19291D0C00BDBD7C /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
 		C96194E019291D0C00BDBD7C /* OCDiffTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "OCDiffTests-Info.plist"; sourceTree = "<group>"; };
 		C96194E419291D0C00BDBD7C /* OCDAPIComparatorTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OCDAPIComparatorTests.m; sourceTree = "<group>"; };
 		C96194EC19293B1600BDBD7C /* OCDAPIComparator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCDAPIComparator.h; sourceTree = "<group>"; };
@@ -132,7 +156,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C96194D11928EDD800BDBD7C /* ObjectDoc.framework in Frameworks */,
+				32F4ECA722813AA9000AA161 /* ObjectDoc.framework in Frameworks */,
 				C96194C51928E6AE00BDBD7C /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -141,14 +165,24 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C96194DD19291D0C00BDBD7C /* XCTest.framework in Frameworks */,
-				C96195351929460000BDBD7C /* ObjectDoc.framework in Frameworks */,
+				32F4ECAA22813B43000AA161 /* ObjectDoc.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		32F4EC9822813AA0000AA161 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				32F4ECA022813AA0000AA161 /* ObjectDoc.framework */,
+				32F4ECA222813AA0000AA161 /* ObjectDocTests.xctest */,
+				32F4ECA422813AA0000AA161 /* doctool */,
+				32F4ECA622813AA0000AA161 /* libclang.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		C934DFCE193A20C40073B1B6 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
@@ -164,6 +198,7 @@
 		C96194A61928E56500BDBD7C = {
 			isa = PBXGroup;
 			children = (
+				32F4EC9722813AA0000AA161 /* ObjectDoc.xcodeproj */,
 				C96194C61928E6AE00BDBD7C /* OCDiff */,
 				C96194DE19291D0C00BDBD7C /* OCDiffTests */,
 				C96194B31928E57700BDBD7C /* Frameworks */,
@@ -186,9 +221,7 @@
 		C96194B31928E57700BDBD7C /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				C96194D01928EDD800BDBD7C /* ObjectDoc.framework */,
 				C96194B41928E57700BDBD7C /* Foundation.framework */,
-				C96194DC19291D0C00BDBD7C /* XCTest.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -316,6 +349,12 @@
 			mainGroup = C96194A61928E56500BDBD7C;
 			productRefGroup = C96194B21928E57700BDBD7C /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 32F4EC9822813AA0000AA161 /* Products */;
+					ProjectRef = 32F4EC9722813AA0000AA161 /* ObjectDoc.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				C96194C31928E6AE00BDBD7C /* OCDiff */,
@@ -323,6 +362,37 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		32F4ECA022813AA0000AA161 /* ObjectDoc.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = ObjectDoc.framework;
+			remoteRef = 32F4EC9F22813AA0000AA161 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		32F4ECA222813AA0000AA161 /* ObjectDocTests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = ObjectDocTests.xctest;
+			remoteRef = 32F4ECA122813AA0000AA161 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		32F4ECA422813AA0000AA161 /* doctool */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.executable";
+			path = doctool;
+			remoteRef = 32F4ECA322813AA0000AA161 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		32F4ECA622813AA0000AA161 /* libclang.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libclang.a;
+			remoteRef = 32F4ECA522813AA0000AA161 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		C96194D919291D0C00BDBD7C /* Resources */ = {
@@ -430,7 +500,6 @@
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
-				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/Dependencies";
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
@@ -478,7 +547,6 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/Dependencies";
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -547,11 +615,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COMBINE_HIDPI_IMAGES = YES;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(DEVELOPER_FRAMEWORKS_DIR)",
-					"$(inherited)",
-					"$(PROJECT_DIR)/Dependencies",
-				);
 				INFOPLIST_FILE = "OCDiffTests/OCDiffTests-Info.plist";
 				PRODUCT_BUNDLE_IDENTIFIER = "net.codeworkshop.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -563,11 +626,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COMBINE_HIDPI_IMAGES = YES;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(DEVELOPER_FRAMEWORKS_DIR)",
-					"$(inherited)",
-					"$(PROJECT_DIR)/Dependencies",
-				);
 				INFOPLIST_FILE = "OCDiffTests/OCDiffTests-Info.plist";
 				PRODUCT_BUNDLE_IDENTIFIER = "net.codeworkshop.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
