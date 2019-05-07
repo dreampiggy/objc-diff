@@ -408,7 +408,11 @@
 
         if (protocolsChanged) {
             // Rule: Protocol args changes should mark as Major
-            semversion = OCDSemversionMajor;
+            if ([oldProtocols.set isSubsetOfSet:newProtocols.set]) {
+                semversion = OCDSemversionPatch;
+            } else {
+                semversion = OCDSemversionMajor;
+            }
             OCDModification *modification = [OCDModification modificationWithType:OCDModificationTypeProtocols
                                                                     previousValue:[self stringForProtocolCursors:oldProtocols]
                                                                      currentValue:[self stringForProtocolCursors:newProtocols]
@@ -440,7 +444,7 @@
          Minor version Y (x.Y.z | x > 0). It MUST be incremented if any public API functionality is marked as deprecated.
          */
         OCDSemversion semversion = OCDSemversionPatch;
-        if (oldAvailabilityKind != PLClangAvailabilityKindAvailable && newAvailabilityKind == PLClangAvailabilityKindDeprecated) {
+        if (oldAvailabilityKind == PLClangAvailabilityKindAvailable && newAvailabilityKind == PLClangAvailabilityKindDeprecated) {
             // Rule: Declaration from Available to Deprecated should mark as Minor
             semversion = OCDSemversionMinor;
         } else if (oldAvailabilityKind == PLClangAvailabilityKindAvailable && (newAvailabilityKind == PLClangAvailabilityKindUnavailable || newAvailabilityKind == PLClangAvailabilityKindInaccessible)) {
@@ -486,13 +490,15 @@
     if (oldCursor.kind == PLClangCursorKindMacroDefinition && newCursor.kind == PLClangCursorKindMacroDefinition) {
         NSString *oldMacroDefinition = [self macroDefinitionForCursor:oldCursor];
         NSString *newMacroDefinition = [self macroDefinitionForCursor:newCursor];
-        if (![oldMacroDefinition isEqualToString:newMacroDefinition]) {
-            // Rule: Macro difference should mark as major changes, since it can expand and effect binary behavior from versions
-            OCDModification *modification = [OCDModification modificationWithType:OCDModificationTypeMacro
-                                                                    previousValue:oldMacroDefinition
-                                                                     currentValue:newMacroDefinition
-                                                                       semversion:OCDSemversionMajor];
-            [modifications addObject:modification];
+        if (oldMacroDefinition && newMacroDefinition) {
+            if (![oldMacroDefinition isEqualToString:newMacroDefinition]) {
+                // Rule: Macro difference should mark as major changes, since it can expand and effect binary behavior from versions
+                OCDModification *modification = [OCDModification modificationWithType:OCDModificationTypeMacro
+                                                                        previousValue:oldMacroDefinition
+                                                                         currentValue:newMacroDefinition
+                                                                           semversion:OCDSemversionMajor];
+                [modifications addObject:modification];
+            }
         }
     }
 
@@ -563,11 +569,17 @@
     return protocols;
 }
 
+#pragma mark - Semversion Helper
+
 /**
  * Return YES if the newType is compatible for oldType
  * Compatible means, no source code break when replace the declaration of oldType with newType. See the detail rules.
  */
 - (BOOL)isCompatibleBetweenOldType:(PLClangType *)oldType newType:(PLClangType *)newType {
+    if (![self isNullabilityCompatibleBetweenOldType:oldType newType:newType]) {
+        return NO;
+    }
+    
     PLClangType *rawOldType = [oldType typeByRemovingOuterNullability];
     PLClangType *rawNewType = [newType typeByRemovingOuterNullability];
     
@@ -580,14 +592,98 @@
     }
     
     /**
-     id<MyProtocol1> is compatible for id<MyProtocol1, MyProtocol2>
      SuperClass * is compatible for SubClass *
      */
     if (rawNewType.kind == PLClangTypeKindObjCObjectPointer && rawOldType.kind == PLClangTypeKindObjCObjectPointer) {
-        // TODO
+        // TODO: Try to find the super class of one type and detect.
+    }
+    
+    /**
+     f(void) is compatible for f()
+     Actually this is not correct. But for nearly every code inside Objective-C world. It's OK.
+     */
+    if (rawNewType.kind == PLClangTypeKindFunctionPrototype && rawOldType.kind == PLClangTypeKindFunctionNoPrototype) {
+        if (rawNewType.argumentTypes.count == 0) {
+            return YES;
+        }
+    }
+    
+    /**
+     f() is compatible for f(void)
+     */
+    if (rawOldType.kind == PLClangTypeKindFunctionNoPrototype && rawNewType.kind == PLClangTypeKindFunctionPrototype) {
+        if (rawOldType.argumentTypes.count == 0) {
+            return YES;
+        }
     }
     
     return OCDEqualTypes(rawOldType, rawNewType);
+}
+
+/** C function compatible */
+- (BOOL)isFunctionCompatibleBetweenOldType:(PLClangType *)oldType newType:(PLClangType *)newType {
+    PLClangType *oldPointeeType = oldType.pointeeType;
+    PLClangType *newPointeeType = newType.pointeeType;
+    if (![self isCompatibleBetweenOldType:oldPointeeType.resultType newType:newPointeeType.resultType]) {
+        return NO;
+    }
+    
+    if (oldPointeeType.argumentTypes.count != newPointeeType.argumentTypes.count) {
+        return NO;
+    }
+    
+    for (NSUInteger argIndex = 0; argIndex < [oldPointeeType.argumentTypes count]; argIndex++) {
+        PLClangType *oldArgumentType = oldPointeeType.argumentTypes[argIndex];
+        PLClangType *newArgumentType = newPointeeType.argumentTypes[argIndex];
+        if (![self isCompatibleBetweenOldType:oldArgumentType newType:newArgumentType]) {
+            return NO;
+        }
+    }
+    
+    return YES;
+}
+
+/** Objective-C method compatible */
+- (BOOL)isMethodCompatibleBetweenOldCursor:(PLClangCursor *)oldCursor newCursor:(PLClangCursor *)newCursor {
+    if (![self isCompatibleBetweenOldType:oldCursor.resultType newType:newCursor.resultType]) {
+        return NO;
+    }
+    
+    if (oldCursor.isVariadic != newCursor.isVariadic) {
+        return NO;
+    }
+    
+    if ([oldCursor.arguments count] != [newCursor.arguments count]) {
+        return NO;
+    }
+    
+    for (NSUInteger argIndex = 0; argIndex < [oldCursor.arguments count]; argIndex++) {
+        PLClangCursor *oldArgument = oldCursor.arguments[argIndex];
+        PLClangCursor *newArgument = newCursor.arguments[argIndex];
+        if (![self isCompatibleBetweenOldType:oldArgument.type newType:newArgument.type]) {
+            return NO;
+        }
+    }
+    
+    return YES;
+}
+
+/**
+ Return YES if the old type is nullability compatible for new type
+ Nullability Compatible means, no warning when `-Wnonnull` is enabled when replace the declaration of oldType with newType. See the detail rules.
+ */
+- (BOOL)isNullabilityCompatibleBetweenOldType:(PLClangType *)oldType newType:(PLClangType *)newType {
+    PLClangNullability oldNullability = oldType.nullability;
+    PLClangNullability newNullability = newType.nullability;
+    if (oldNullability == PLClangNullabilityInvalid && newNullability == PLClangNullabilityInvalid) {
+        return YES;
+    }
+    // Rule: Type nullable to nonnull should mark as Major
+    if (oldNullability == PLClangNullabilityNullable && newNullability == PLClangNullabilityNonnull) {
+        return NO;
+    }
+    
+    return YES;
 }
 
 - (BOOL)declarationChangedBetweenOldCursor:(PLClangCursor *)oldCursor newCursor:(PLClangCursor *)newCursor {
@@ -676,43 +772,23 @@
         case PLClangCursorKindObjCClassMethodDeclaration:
         {
             // Rule: Method args changes should mark as Major
-            if (![self isCompatibleBetweenOldType:oldCursor.resultType newType:newCursor.resultType]) {
-                return OCDSemversionMajor;
-            }
-            
-            if (oldCursor.isVariadic != newCursor.isVariadic) {
-                return OCDSemversionMajor;
-            }
-            
-            if ([oldCursor.arguments count] != [newCursor.arguments count]) {
-                return OCDSemversionMajor;
-            }
-            
-            for (NSUInteger argIndex = 0; argIndex < [oldCursor.arguments count]; argIndex++) {
-                PLClangCursor *oldArgument = oldCursor.arguments[argIndex];
-                PLClangCursor *newArgument = newCursor.arguments[argIndex];
-                if (![self isCompatibleBetweenOldType:oldArgument.type newType:newArgument.type]) {
-                    return OCDSemversionMajor;
-                }
-            }
-            
-            break;
+            return ![self isMethodCompatibleBetweenOldCursor:oldCursor newCursor:newCursor] ? OCDSemversionMajor : OCDSemversionPatch;
         }
             
         case PLClangCursorKindObjCPropertyDeclaration:
         {
             if (oldCursor.objCPropertyAttributes != newCursor.objCPropertyAttributes) {
                 // Rule: Property readwrite to readonly should mark as Major
-                if (oldCursor.objCPropertyAttributes | PLClangObjCPropertyAttributeReadWrite && newCursor.objCPropertyAttributes | PLClangObjCPropertyAttributeReadOnly) {
+                if (oldCursor.objCPropertyAttributes & PLClangObjCPropertyAttributeReadWrite && newCursor.objCPropertyAttributes & PLClangObjCPropertyAttributeReadOnly) {
                     return OCDSemversionMajor;
                 }
-                // Rule: Property nonnull to nullable should mark as Major
-                if (oldCursor.objCPropertyAttributes | PLClangObjCPropertyAttributeNonnull && newCursor.objCPropertyAttributes | PLClangObjCPropertyAttributeNullable) {
+                // Rule: Property nullable to nonnull should mark as Major
+                if (oldCursor.objCPropertyAttributes & PLClangObjCPropertyAttributeNullable && newCursor.objCPropertyAttributes & PLClangObjCPropertyAttributeNonnull) {
                     return OCDSemversionMajor;
                 }
             }
             
-            if (!OCDEqualTypes(oldCursor.type, newCursor.type)) {
+            if (![self isCompatibleBetweenOldType:oldCursor.type newType:newCursor.type]) {
                 return OCDSemversionMajor;
             }
             
@@ -738,12 +814,12 @@
             // Report changes to block and function pointer typedefs
             // Rule: block typedefs changes should mark as Major
             if (oldCursor.underlyingType.kind == PLClangTypeKindBlockPointer && oldCursor.underlyingType.kind == PLClangTypeKindBlockPointer) {
-                return ![self isCompatibleBetweenOldType:oldCursor.underlyingType newType:newCursor.underlyingType] ? OCDSemversionMajor : OCDSemversionPatch;
+                return ![self isFunctionCompatibleBetweenOldType:oldCursor.underlyingType newType:newCursor.underlyingType] ? OCDSemversionMajor : OCDSemversionPatch;
             }
             // Rule: function pointer typedefs changes should mark as Major
             if (oldCursor.underlyingType.kind == PLClangTypeKindPointer && oldCursor.underlyingType.pointeeType.canonicalType.kind == PLClangTypeKindFunctionPrototype &&
                 newCursor.underlyingType.kind == PLClangTypeKindPointer && newCursor.underlyingType.pointeeType.canonicalType.kind == PLClangTypeKindFunctionPrototype) {
-                return ![self isCompatibleBetweenOldType:oldCursor.underlyingType newType:newCursor.underlyingType] ? OCDSemversionMajor : OCDSemversionPatch;
+                return ![self isFunctionCompatibleBetweenOldType:oldCursor.underlyingType newType:newCursor.underlyingType] ? OCDSemversionMajor : OCDSemversionPatch;
             }
             
             break;
@@ -1194,6 +1270,10 @@
     
     NSString *fileContents =
     [NSString stringWithContentsOfFile:startLocation.path encoding:NSUTF8StringEncoding error:nil];
+    if (!fileContents) {
+        return nil;
+    }
+    
     if (NSMaxRange(range) > fileContents.length) {
         return nil;
     }
