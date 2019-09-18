@@ -11,6 +11,7 @@
 #import "OCDTextReportGenerator.h"
 #import "OCDTitleGenerator.h"
 #import "OCDXMLReportGenerator.h"
+#import "OCDAPIExporter.h"
 
 enum OCDReportTypes {
     OCDReportTypeText = 1 << 0,
@@ -352,6 +353,50 @@ static NSArray *GetCompilerArguments(int argc, char *argv[]) {
     return arguments;
 }
 
+static int GenerateAPIList(NSString *APIPath, NSMutableArray *compilerArguments, NSString *sdkName, BOOL printErrors) {
+    OCDSDK *defaultSDK = nil;
+    OCDSDK *SDK = [OCDSDK containingSDKForPath:APIPath];
+    BOOL pathIsSDK = [SDK.path isEqualToString:APIPath];
+    
+    if (SDK == nil) {
+        defaultSDK = [OCDSDK SDKForName:sdkName];
+        if (defaultSDK == nil) {
+            fprintf(stderr, "Could not locate SDK \"%s\"\n", [sdkName UTF8String]);
+            return 1;
+        }
+    }
+
+    ApplySDKToCompilerArguments(SDK ?: defaultSDK, compilerArguments);
+    
+    if (pathIsSDK) {
+//        differences = DiffSDKs(oldPath, oldCompilerArguments, newPath, newCompilerArguments, printErrors);
+    } else {
+        PLClangSourceIndex *index = [PLClangSourceIndex indexWithOptions:0];
+
+        OCDAPISource *source;
+        if (APIPath != nil) {
+
+            if (SDK != nil) {
+                PLClangTranslationUnit *oldTU = TranslationUnitForSDKFramework(index, APIPath, compilerArguments, printErrors);
+                source = [OCDAPISource APISourceWithTranslationUnit:oldTU containingPath:APIPath includeSystemHeaders:YES];
+            } else {
+                PLClangTranslationUnit *oldTU = TranslationUnitForPath(index, APIPath, compilerArguments, printErrors);
+                source = [OCDAPISource APISourceWithTranslationUnit:oldTU];
+            }
+
+            if (source == nil) {
+                return 1;
+            }
+        }
+
+        NSArray<OCDAPIReport *> *reports = [OCDAPIExporter reportsWithAPISource:source];
+        
+        NSLog(@"%@", reports);
+    }
+    
+    return 0;
+}
+
 int main(int argc, char *argv[]) {
     @autoreleasepool {
         NSString *sdkName;
@@ -360,11 +405,13 @@ int main(int argc, char *argv[]) {
         NSString *title;
         NSString *linkMapPath;
         NSString *htmlOutputDirectory;
-        NSMutableArray *oldCompilerArguments = [NSMutableArray arrayWithObjects:@"-x", @"objective-c-header", nil];
-        NSMutableArray *newCompilerArguments = [oldCompilerArguments mutableCopy];
+        NSMutableArray *defaultCompilerArguments = [NSMutableArray arrayWithObjects:@"-x", @"objective-c-header", nil];
+        NSMutableArray *oldCompilerArguments = [defaultCompilerArguments mutableCopy];
+        NSMutableArray *newCompilerArguments = [defaultCompilerArguments mutableCopy];
         int reportTypes = 0;
         BOOL printErrors = YES;
         BOOL semversion = NO;
+        NSString *APIPath = nil;
         int optchar;
 
         static struct option longopts[] = {
@@ -382,6 +429,7 @@ int main(int argc, char *argv[]) {
             { "newargs",      no_argument,        NULL,          'N' },
             { "skip-error",   no_argument,        NULL,          'P' },
             { "semversion",   no_argument,        NULL,          'S' },
+            { "api-export",   required_argument,  NULL,          'E' },
             { "version",      no_argument,        NULL,          'v' },
             { NULL,           0,                  NULL,           0  }
         };
@@ -431,6 +479,7 @@ int main(int argc, char *argv[]) {
                 case 'A':
                 {
                     NSArray *arguments = GetCompilerArguments(argc - optind, argv + optind);
+                    [defaultCompilerArguments addObjectsFromArray:arguments];
                     [oldCompilerArguments addObjectsFromArray:arguments];
                     [newCompilerArguments addObjectsFromArray:arguments];
                     optind += [arguments count];
@@ -460,6 +509,11 @@ int main(int argc, char *argv[]) {
                     semversion = YES;
                     break;
                 }
+                case 'E':
+                {
+                    APIPath = @(optarg);
+                    break;
+                }
                 case 0:
                     break;
                 case '?':
@@ -477,7 +531,7 @@ int main(int argc, char *argv[]) {
             return 1;
         }
 
-        if ([newPath length] < 1) {
+        if ([newPath length] < 1 && !APIPath) {
             fprintf(stderr, "No new API path specified\n");
             PrintUsage();
             return 1;
@@ -499,6 +553,11 @@ int main(int argc, char *argv[]) {
             } else {
                 sdkName = @"macosx";
             }
+        }
+        
+        if (APIPath) {
+            // Export API list
+            return GenerateAPIList(APIPath, defaultCompilerArguments, sdkName, printErrors);
         }
 
         OCDSDK *defaultSDK = nil;

@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3286EC7D233227A80087180F /* OCDAPIExporter.m in Sources */ = {isa = PBXBuildFile; fileRef = 3286EC7C233227A80087180F /* OCDAPIExporter.m */; };
+		3286EC8423322B7F0087180F /* OCDAPIReport.m in Sources */ = {isa = PBXBuildFile; fileRef = 3286EC8323322B7F0087180F /* OCDAPIReport.m */; };
 		32F4ECA722813AA9000AA161 /* ObjectDoc.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 32F4ECA022813AA0000AA161 /* ObjectDoc.framework */; };
 		32F4ECAA22813B43000AA161 /* ObjectDoc.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 32F4ECA022813AA0000AA161 /* ObjectDoc.framework */; };
 		C907F0861F0EE1FF004A1B9D /* OCDAPISource.m in Sources */ = {isa = PBXBuildFile; fileRef = C907F0851F0EE1FF004A1B9D /* OCDAPISource.m */; };
@@ -112,6 +114,10 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		3286EC7B233227A80087180F /* OCDAPIExporter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OCDAPIExporter.h; sourceTree = "<group>"; };
+		3286EC7C233227A80087180F /* OCDAPIExporter.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OCDAPIExporter.m; sourceTree = "<group>"; };
+		3286EC8223322B7F0087180F /* OCDAPIReport.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OCDAPIReport.h; sourceTree = "<group>"; };
+		3286EC8323322B7F0087180F /* OCDAPIReport.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OCDAPIReport.m; sourceTree = "<group>"; };
 		32F4EC9722813AA0000AA161 /* ObjectDoc.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ObjectDoc.xcodeproj; path = Dependencies/objectdoc/ObjectDoc.xcodeproj; sourceTree = "<group>"; };
 		C907F0841F0EE1FF004A1B9D /* OCDAPISource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCDAPISource.h; sourceTree = "<group>"; };
 		C907F0851F0EE1FF004A1B9D /* OCDAPISource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCDAPISource.m; sourceTree = "<group>"; };
@@ -241,6 +247,10 @@
 				C9577E9A193ADEA800FCAC57 /* NSString+OCDPathUtilities.m */,
 				C96194EC19293B1600BDBD7C /* OCDAPIComparator.h */,
 				C96194ED19293B1600BDBD7C /* OCDAPIComparator.m */,
+				3286EC7B233227A80087180F /* OCDAPIExporter.h */,
+				3286EC7C233227A80087180F /* OCDAPIExporter.m */,
+				3286EC8223322B7F0087180F /* OCDAPIReport.h */,
+				3286EC8323322B7F0087180F /* OCDAPIReport.m */,
 				C96F3C131EEDB20A00561C60 /* OCDAPIDifferences.h */,
 				C96F3C141EEDB20A00561C60 /* OCDAPIDifferences.m */,
 				C907F0841F0EE1FF004A1B9D /* OCDAPISource.h */,
@@ -443,6 +453,7 @@
 				C97EB4D91F00717800E61344 /* OCDLinkMap.m in Sources */,
 				C961953B1929625100BDBD7C /* OCDModification.m in Sources */,
 				C94DABD51EEDA39500647160 /* OCDModule.m in Sources */,
+				3286EC7D233227A80087180F /* OCDAPIExporter.m in Sources */,
 				C96194F119293B2D00BDBD7C /* OCDifference.m in Sources */,
 				C9E1BA6A192F872600680085 /* OCDHTMLReportGenerator.m in Sources */,
 				C907F0861F0EE1FF004A1B9D /* OCDAPISource.m in Sources */,
@@ -450,6 +461,7 @@
 				C9E1BA76193405DA00680085 /* OCDXMLReportGenerator.m in Sources */,
 				C96F3C151EEDB20A00561C60 /* OCDAPIDifferences.m in Sources */,
 				C91DE3821EFF3DF60055507A /* PLClangCursor+OCDExtensions.m in Sources */,
+				3286EC8423322B7F0087180F /* OCDAPIReport.m in Sources */,
 				C9E1BA73193402F500680085 /* OCDTextReportGenerator.m in Sources */,
 				C9534622207A7ED1008C0A7E /* OCDTitleGenerator.m in Sources */,
 				C96194C81928E6AE00BDBD7C /* main.m in Sources */,
