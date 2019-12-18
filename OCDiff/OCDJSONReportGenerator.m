@@ -20,6 +20,10 @@
     for (OCDAPIReport *report in reports) {
         if (report.kind == PLClangCursorKindObjCInstanceMethodDeclaration || report.kind == PLClangCursorKindObjCClassMethodDeclaration || report.kind == PLClangCursorKindObjCPropertyDeclaration) {
             NSString *className = report.className;
+            if (!className) {
+                // If we can not parse the className, ignore it
+                continue;
+            }
             NSMutableDictionary *classNode = objcClassNode[className];
             // Class not record
             if (!classNode) {
