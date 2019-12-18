@@ -36,6 +36,7 @@ static void PrintUsage(void) {
     "  --title            Title of the generated report\n"
     "  --text             Write a text report to standard output (the default)\n"
     "  --xml              Write an XML report to standard output\n"
+    "  --json             Write an JSON report to standard output\n"
     "  --html <directory> Write an HTML report to the specified directory\n"
     "  --sdk <name>       Use the specified SDK\n"
     "  --old <path>       Path to the old API\n"
@@ -45,6 +46,7 @@ static void PrintUsage(void) {
     "  --newargs <args>   Compiler arguments for the new API version\n"
     "  --semversion       Analysis the sem-version changes base on diff changes for API\n"
     "  --skip-error       Skip any parser error from clang and try to generate report\n"
+    "  --api-export       Export the API list for current framework. The supported format is JSON only\n"
     "  --version          Show the version and exit\n",
     [name UTF8String]);
 }
