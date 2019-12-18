@@ -6,8 +6,10 @@
 @implementation OCDAPIComparator {
     OCDAPISource *_oldAPISource;
     OCDAPISource *_newAPISource;
+    OCDAPISource *_APISource;
     NSString *_oldBaseDirectory;
     NSString *_newBaseDirectory;
+    NSString *_baseDirectory;
 
     /**
      * Keys for property declarations that have been converted to or from explicit accessor declarations.
@@ -161,6 +163,85 @@
     }];
 
     return api;
+}
+
+#pragma mark - API Report
+- (instancetype)initWithAPISource:(OCDAPISource *)APISource {
+    self = [super init];
+    if (self) {
+        _APISource = APISource;
+        _baseDirectory = [[APISource.translationUnit.spelling stringByDeletingLastPathComponent] ocd_absolutePath];
+    }
+    return self;
+}
+
+- (NSArray<OCDAPIReport *> *)reports {
+    NSDictionary *API = [self APIForSource:_APISource];
+    NSMutableArray *reports = [NSMutableArray arrayWithCapacity:API.count];
+    for (NSString *USR in API) {
+        PLClangCursor *cursor = API[USR];
+        OCDAPIReport *report = [OCDAPIReport reportWithCursor:cursor];
+        if (report) {
+            report.className = [self classNameForCursor:cursor];
+            report.propertyAttributes = [self propertyAttributeForCursor:cursor];
+            report.propertyGetterName = cursor.objCPropertyGetterName;
+            report.propertySetterName = cursor.objCPropertySetterName;
+            report.methodArguments = [self methodArgumentsForCursor:cursor];
+            report.methodReturnType = [self methodReturnTypeForCursor:cursor];
+            [reports addObject:report];
+        }
+    }
+    return [reports copy];
+}
+
++ (NSArray<OCDAPIReport *> *)reportsWithAPISource:(OCDAPISource *)APISource {
+    OCDAPIComparator *comparator = [[self alloc] initWithAPISource:APISource];
+    return [comparator reports];
+}
+
+- (NSString *)classNameForCursor:(PLClangCursor *)cursor {
+    switch (cursor.kind) {
+        case PLClangCursorKindObjCInstanceMethodDeclaration:
+        case PLClangCursorKindObjCClassMethodDeclaration:
+        case PLClangCursorKindObjCPropertyDeclaration:
+            return [self displayNameForObjCParentCursor:cursor.semanticParent];
+        default:
+            return nil;
+    }
+}
+
+- (NSArray *)methodArgumentsForCursor:(PLClangCursor *)cursor {
+    if (cursor.kind != PLClangCursorKindObjCInstanceMethodDeclaration && cursor.kind != PLClangCursorKindObjCClassMethodDeclaration && cursor.kind != PLClangCursorKindFunctionDeclaration) {
+        return nil;
+    }
+    NSArray<PLClangType *> *arguments = cursor.arguments;
+    NSMutableArray *result = [NSMutableArray arrayWithCapacity:arguments.count];
+    if (arguments.count == 0) {
+        return result;
+    }
+    [cursor.arguments enumerateObjectsUsingBlock:^(PLClangCursor *argument, NSUInteger index, BOOL *stopArguments) {
+        PLClangType *argumentType = [argument.type typeByRemovingOuterNullability];
+        NSString *argumentName = argument.spelling;
+        NSString *argumentTypeName = argumentType.spelling;
+        if (!argumentName || !argumentType) {
+            return;
+        }
+        NSDictionary *item = @{@"name": argumentName, @"type": argumentTypeName};
+        [result addObject:item];
+    }];
+
+    if (cursor.isVariadic) {
+        [result addObject:@"..."];
+    }
+    return [result copy];
+}
+
+- (NSString *)methodReturnTypeForCursor:(PLClangCursor *)cursor {
+    if (cursor.kind != PLClangCursorKindObjCInstanceMethodDeclaration && cursor.kind != PLClangCursorKindObjCClassMethodDeclaration && cursor.kind != PLClangCursorKindFunctionDeclaration) {
+        return nil;
+    }
+    PLClangType *returnType = [cursor.resultType typeByRemovingOuterNullability];
+    return returnType.spelling;
 }
 
 /**
@@ -1039,6 +1120,10 @@
 }
 
 - (NSString *)propertyAttributeStringForCursor:(PLClangCursor *)cursor {
+    return [[self propertyAttributeForCursor:cursor] componentsJoinedByString:@", "];
+}
+
+- (NSArray *)propertyAttributeForCursor:(PLClangCursor *)cursor {
     NSMutableArray *attributeStrings = [NSMutableArray array];
     PLClangObjCPropertyAttributes attributes = cursor.objCPropertyAttributes;
 
@@ -1114,7 +1199,7 @@
         [attributeStrings addObject:[NSString stringWithFormat:@"setter=%@", cursor.objCPropertySetterName]];
     }
 
-    return [attributeStrings componentsJoinedByString:@", "];
+    return attributeStrings;
 }
 
 /**

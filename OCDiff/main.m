@@ -11,7 +11,7 @@
 #import "OCDTextReportGenerator.h"
 #import "OCDTitleGenerator.h"
 #import "OCDXMLReportGenerator.h"
-#import "OCDAPIExporter.h"
+#import "OCDJSONReportGenerator.h"
 
 enum OCDReportTypes {
     OCDReportTypeText = 1 << 0,
@@ -389,9 +389,10 @@ static int GenerateAPIList(NSString *APIPath, NSMutableArray *compilerArguments,
             }
         }
 
-        NSArray<OCDAPIReport *> *reports = [OCDAPIExporter reportsWithAPISource:source];
+        NSArray<OCDAPIReport *> *reports = [OCDAPIComparator reportsWithAPISource:source];
         
-        NSLog(@"%@", reports);
+        OCDJSONReportGenerator *generator = [[OCDJSONReportGenerator alloc] init];
+        [generator generateReportForAPIReports:reports];
     }
     
     return 0;

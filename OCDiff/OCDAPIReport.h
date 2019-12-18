@@ -8,18 +8,20 @@
 #import <Foundation/Foundation.h>
 #import <ObjectDoc/ObjectDoc.h>
 
-NS_ASSUME_NONNULL_BEGIN
-
 @interface OCDAPIReport : NSObject
 
-@property (nonatomic, readonly) PLClangCursorKind kind;
-@property (nonatomic, readonly) NSString *name;
-@property (nonatomic, readonly) NSString *path;
-@property (nonatomic, readonly) NSUInteger lineNumber;
-@property (nonatomic, readonly) NSString *USR;
+@property (nonatomic, readwrite) PLClangCursorKind kind;
+@property (nonatomic, readwrite) NSString *name;
+@property (nonatomic, readwrite) NSString *type;
+@property (nonatomic, readwrite) NSString *className;
+@property (nonatomic, readwrite) NSArray<NSString *> *propertyAttributes;
+@property (nonatomic, readwrite) NSString *propertyGetterName;
+@property (nonatomic, readwrite) NSString *propertySetterName;
+@property (nonatomic, readwrite) NSArray<NSString *> *methodArguments;
+@property (nonatomic, readwrite) NSString *methodReturnType;
+@property (nonatomic, readwrite) NSString *path;
+@property (nonatomic, readwrite) NSUInteger lineNumber;
 
-+ (instancetype)reportWithKind:(PLClangCursorKind)kind name:(NSString *)name path:(NSString *)path lineNumber:(NSUInteger)lineNumber USR:(NSString *)USR;
++ (instancetype)reportWithCursor:(PLClangCursor *)cursor;
 
 @end
-
-NS_ASSUME_NONNULL_END
